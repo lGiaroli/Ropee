@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "RopeQuest",
+    "slug": "ropequest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "ropequest",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.ropequest.mobile"
+    },
+    "android": {
+      "package": "app.ropequest.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#1FD37A"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "local-ropequest"
+      }
+    }
+  }
+}
