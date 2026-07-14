@@ -61,6 +61,21 @@ interface RecordWorkoutInput {
   completedStrengthFinisher: boolean;
 }
 
+const storageName = 'ropee-storage-v1';
+const legacyStorageName = 'ropequest-storage-v1';
+const ropeeStorage = {
+  getItem: async (name: string) => {
+    const storedValue = await AsyncStorage.getItem(name);
+    if (storedValue || name !== storageName) return storedValue;
+
+    const legacyValue = await AsyncStorage.getItem(legacyStorageName);
+    if (legacyValue) await AsyncStorage.setItem(storageName, legacyValue);
+    return legacyValue;
+  },
+  setItem: (name: string, value: string) => AsyncStorage.setItem(name, value),
+  removeItem: (name: string) => AsyncStorage.removeItem(name),
+};
+
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
@@ -313,8 +328,8 @@ export const useAppStore = create<AppState>()(
         }),
     }),
     {
-      name: 'ropequest-storage-v1',
-      storage: createJSONStorage(() => AsyncStorage),
+      name: storageName,
+      storage: createJSONStorage(() => ropeeStorage),
       onRehydrateStorage: () => (state) => {
         state?.syncDefaultRoutines();
         state?.setHydrated(true);

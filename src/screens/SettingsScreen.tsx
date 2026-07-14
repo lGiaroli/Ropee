@@ -152,7 +152,7 @@ export const SettingsScreen = (_props: NavigationProps) => {
         <SettingsInfoRow
           icon={<Shield size={21} color="#7657FF" strokeWidth={2.7} />}
           label="Privacidad"
-          description="RopeQuest funciona offline en esta versión"
+          description="Ropee funciona offline en esta versión"
           accessory={
             <View style={styles.statusChip}>
               <AppText weight="800" style={styles.statusChipText}>

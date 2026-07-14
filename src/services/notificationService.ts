@@ -16,7 +16,7 @@ export const scheduleDailyReminder = async (time: string, enabled: boolean) => {
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'RopeQuest',
+      title: 'Ropee',
       body: 'Hoy toca moverse. Mejor 10 minutos reales que 0 minutos perfectos.',
       sound: true,
     },

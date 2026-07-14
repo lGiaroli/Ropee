@@ -100,7 +100,7 @@ export const Mascot = ({ size = 96, mood = 'ready', sequence, animated = true, j
   const visibleJumpFrameIndex = animated && !reducedMotion && usesJumpMotion ? jumpFrameIndex : 0;
 
   return (
-    <View style={[styles.box, { width: size, height: size }]} accessibilityLabel="Ropi, guia de RopeQuest">
+    <View style={[styles.box, { width: size, height: size }]} accessibilityLabel="Ropi, guia de Ropee">
       <Animated.View style={[styles.stage, { width: size, height: size, transform: [{ translateY }, { rotate }, { scale }] }]}>
         <Image
           source={usesJumpMotion ? ropiJumpFrames[visibleJumpFrameIndex] : ropiJump}

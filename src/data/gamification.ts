@@ -141,7 +141,7 @@ export const badgeCatalog: Badge[] = [
   badge('level-five', 'Zona abierta', 'Llegaste al nivel 5.', 'Llegar al nivel 5.', 'map', ['level-two']),
   badge('level-ten', 'Liga alta', 'Llegaste al nivel 10.', 'Llegar al nivel 10.', 'map', ['level-five']),
   badge('level-eighteen', 'Atleta constante', 'Llegaste al nivel 18.', 'Llegar al nivel 18.', 'map', ['level-ten']),
-  badge('level-twenty-five', 'Maestria RopeQuest', 'Llegaste al nivel 25.', 'Llegar al nivel 25.', 'trophy', ['level-eighteen']),
+  badge('level-twenty-five', 'Maestría Ropee', 'Llegaste al nivel 25.', 'Llegar al nivel 25.', 'trophy', ['level-eighteen']),
 ];
 
 export const zones: Zone[] = [

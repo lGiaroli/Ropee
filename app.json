@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "RopeQuest",
-    "slug": "ropequest",
+    "name": "Ropee",
+    "slug": "ropee",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "scheme": "ropequest",
+    "scheme": "ropee",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.ropequest.mobile"
+      "bundleIdentifier": "app.ropee.mobile"
     },
     "android": {
-      "package": "app.ropequest.mobile",
+      "package": "app.ropee.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -35,7 +35,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "local-ropequest"
+        "projectId": "local-ropee"
       }
     }
   }

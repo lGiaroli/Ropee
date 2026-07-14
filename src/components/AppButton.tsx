@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { AppText } from '@/components/AppText';
 import { useTheme } from '@/components/useTheme';
@@ -27,6 +27,8 @@ export const AppButton = ({
   const { colors } = useTheme();
   const reducedMotion = useReducedMotion();
   const [pressScale] = useState(() => new Animated.Value(1));
+  const [enabledProgress] = useState(() => new Animated.Value(disabled ? 0 : 1));
+  const [unlockScale] = useState(() => new Animated.Value(1));
   const background =
     variant === 'primary'
       ? colors.primary
@@ -62,12 +64,60 @@ export const AppButton = ({
     }).start();
   };
 
+  useEffect(() => {
+    enabledProgress.stopAnimation();
+    unlockScale.stopAnimation();
+
+    if (reducedMotion) {
+      enabledProgress.setValue(disabled ? 0 : 1);
+      unlockScale.setValue(1);
+      return undefined;
+    }
+
+    const availability = Animated.timing(enabledProgress, {
+      toValue: disabled ? 0 : 1,
+      duration: disabled ? 150 : 240,
+      useNativeDriver: true,
+    });
+    const scale = disabled
+      ? Animated.timing(unlockScale, {
+          toValue: 0.985,
+          duration: 150,
+          useNativeDriver: true,
+        })
+      : Animated.sequence([
+          Animated.spring(unlockScale, {
+            toValue: 1.035,
+            damping: 15,
+            stiffness: 240,
+            mass: 0.55,
+            useNativeDriver: true,
+          }),
+          Animated.spring(unlockScale, {
+            toValue: 1,
+            damping: 14,
+            stiffness: 230,
+            mass: 0.55,
+            useNativeDriver: true,
+          }),
+        ]);
+    const animation = Animated.parallel([availability, scale]);
+    animation.start();
+    return () => animation.stop();
+  }, [disabled, enabledProgress, reducedMotion, unlockScale]);
+
+  const enabledOpacity = enabledProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.46, 1],
+  });
+
   return (
     <Animated.View
       style={[
         style,
         {
-          transform: [{ scale: pressScale }],
+          opacity: enabledOpacity,
+          transform: [{ scale: unlockScale }, { scale: pressScale }],
         },
       ]}
     >
@@ -84,7 +134,7 @@ export const AppButton = ({
             backgroundColor: background,
             borderColor: variant === 'primary' || variant === 'danger' ? 'transparent' : colors.border,
             shadowColor,
-            opacity: disabled ? 0.45 : pressed ? 0.84 : 1,
+            opacity: pressed ? 0.84 : 1,
           },
         ]}
       >
@@ -106,6 +156,7 @@ export const AppButton = ({
 const styles = StyleSheet.create({
   button: {
     width: '100%',
+    outlineStyle: 'none',
     minHeight: 48,
     paddingHorizontal: spacing.md,
     borderRadius: radius.pill,
@@ -120,7 +171,7 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 9 },
     elevation: 5,
-  },
+  } as any,
   buttonGlossGlow: {
     position: 'absolute',
     left: 16,

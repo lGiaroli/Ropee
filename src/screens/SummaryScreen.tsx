@@ -208,7 +208,7 @@ export const SummaryScreen = ({ navigate }: NavigationProps) => {
       `${title} ${titleAccent}`,
       session.routineName,
       `${formatSeconds(session.totalDuration)} · ${session.jumpsEstimated.toLocaleString('es-AR')} saltos · ${session.caloriesEstimated} kcal`,
-      `${gamification.currentStreak} días de racha en RopeQuest`,
+      `${gamification.currentStreak} días de racha en Ropee`,
     ].join('\n');
 
     try {

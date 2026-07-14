@@ -45,6 +45,9 @@ export const AppNavigator = () => {
   const [route, setRoute] = useState<RouteState>({ name: 'home' });
   const demoSeeded = useRef(false);
   const { colors } = useTheme();
+  const previewOnboarding =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('onboarding') === 'preview';
 
   const navigate = (nextRoute: RouteState) => setRoute(nextRoute);
 
@@ -66,14 +69,14 @@ export const AppNavigator = () => {
         <View style={[styles.app, styles.loading, { backgroundColor: colors.background, borderColor: colors.border }]}>
           <MotionReveal distance={4} duration={360} fromScale={0.92} style={styles.loadingContent}>
             <Trophy size={36} color={colors.primary} />
-            <AppText variant="title">Preparando RopeQuest...</AppText>
+            <AppText variant="title">Preparando Ropee...</AppText>
           </MotionReveal>
         </View>
       </View>
     );
   }
 
-  if (!onboardingComplete) {
+  if (!onboardingComplete || previewOnboarding) {
     return (
       <View style={[styles.shell, { backgroundColor: colors.surfaceStrong }]}>
         <View style={[styles.app, { backgroundColor: colors.background, borderColor: colors.border }]}>
