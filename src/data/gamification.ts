@@ -1,4 +1,4 @@
-import { Badge, Mission, Zone } from '@/types/domain';
+import { Badge, Mission } from '@/types/domain';
 
 export const missionTemplates: Omit<Mission, 'progress' | 'status'>[] = [
   {
@@ -142,62 +142,4 @@ export const badgeCatalog: Badge[] = [
   badge('level-ten', 'Liga alta', 'Llegaste al nivel 10.', 'Llegar al nivel 10.', 'map', ['level-five']),
   badge('level-eighteen', 'Atleta constante', 'Llegaste al nivel 18.', 'Llegar al nivel 18.', 'map', ['level-ten']),
   badge('level-twenty-five', 'Maestría Ropee', 'Llegaste al nivel 25.', 'Llegar al nivel 25.', 'trophy', ['level-eighteen']),
-];
-
-export const zones: Zone[] = [
-  {
-    id: 'zone-1',
-    title: 'Primer salto',
-    description: 'Aprender a volver manana.',
-    minLevel: 1,
-    color: '#1FD37A',
-    suggestedRoutineIds: ['initial-6x20'],
-  },
-  {
-    id: 'zone-2',
-    title: 'Ritmo constante',
-    description: 'Mas control, menos apuro.',
-    minLevel: 3,
-    color: '#2F80ED',
-    suggestedRoutineIds: ['initial-6x20', 'pomodoro-medium'],
-  },
-  {
-    id: 'zone-3',
-    title: 'Resistencia',
-    description: 'Bloques mas largos y mente quieta.',
-    minLevel: 5,
-    color: '#FFB238',
-    suggestedRoutineIds: ['base-8x6'],
-  },
-  {
-    id: 'zone-4',
-    title: 'Velocidad',
-    description: 'Cambios precisos sin perder tecnica.',
-    minLevel: 8,
-    color: '#FF6B5F',
-    suggestedRoutineIds: ['pomodoro-medium'],
-  },
-  {
-    id: 'zone-5',
-    title: 'Control',
-    description: 'Saltos limpios cuando aparece fatiga.',
-    minLevel: 12,
-    color: '#B95CFF',
-    suggestedRoutineIds: ['base-8x6', 'long-80x25'],
-  },
-  {
-    id: 'zone-6',
-    title: 'Atleta',
-    description: 'Volumen alto con recuperacion inteligente.',
-    minLevel: 18,
-    color: '#111827',
-    suggestedRoutineIds: ['long-80x25'],
-  },
-];
-
-export const bpmBands = [
-  { id: 'soft', label: 'Suave', bpm: '100-120 BPM', description: 'Para volver despues de una pausa.' },
-  { id: 'medium', label: 'Medio', bpm: '120-140 BPM', description: 'Ritmo estable para tecnica y cardio.' },
-  { id: 'intense', label: 'Intenso', bpm: '140-160 BPM', description: 'Bloques exigentes sin perder control.' },
-  { id: 'hiit', label: 'HIIT', bpm: '160+ BPM', description: 'Cambios fuertes y descansos cortos.' },
 ];

@@ -174,15 +174,6 @@ export interface Badge {
   unlockedAt?: string;
 }
 
-export interface Zone {
-  id: string;
-  title: string;
-  description: string;
-  minLevel: number;
-  color: string;
-  suggestedRoutineIds: string[];
-}
-
 export interface WorkoutCompletionResult {
   session: WorkoutSession;
   xpBreakdown: XpBreakdown;

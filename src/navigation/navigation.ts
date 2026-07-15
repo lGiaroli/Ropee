@@ -11,7 +11,6 @@ export type ScreenName =
   | 'missions'
   | 'achievements'
   | 'settings'
-  | 'music'
   | 'profile';
 
 export interface RouteState {

@@ -10,7 +10,6 @@ import { AchievementsScreen } from '@/screens/AchievementsScreen';
 import { HistoryScreen } from '@/screens/HistoryScreen';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { MissionsScreen } from '@/screens/MissionsScreen';
-import { MusicScreen } from '@/screens/MusicScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { RoutineCategoryScreen } from '@/screens/RoutineCategoryScreen';
 import { RoutineDetailScreen } from '@/screens/RoutineDetailScreen';
@@ -122,8 +121,6 @@ export const AppNavigator = () => {
         return <AchievementsScreen route={route} navigate={navigate} />;
       case 'settings':
         return <SettingsScreen route={route} navigate={navigate} />;
-      case 'music':
-        return <MusicScreen route={route} navigate={navigate} />;
       case 'profile':
         return <ProfileScreen route={route} navigate={navigate} />;
       default:

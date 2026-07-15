@@ -1,17 +1,19 @@
-import { Award, Flame, Gauge, Settings, Zap } from 'lucide-react-native';
+import { Award, ChevronRight, Flame, Gauge, ListChecks, Settings, Zap } from 'lucide-react-native';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { AchievementBadge } from '@/components/AchievementBadge';
 import { AppText } from '@/components/AppText';
 import { IconButton } from '@/components/IconButton';
+import { MotionPressable } from '@/components/MotionPressable';
 import { MotionReveal } from '@/components/MotionReveal';
 import { Screen } from '@/components/Screen';
 import { useTheme } from '@/components/useTheme';
 import { visualForAchievement } from '@/data/achievementVisuals';
 import { badgeCatalog } from '@/data/gamification';
 import { NavigationProps } from '@/navigation/navigation';
-import { useBadgeData } from '@/store/selectors';
+import { useBadgeData, useMissionData } from '@/store/selectors';
 import { useAppStore } from '@/store/useAppStore';
 import { radius, spacing } from '@/theme/tokens';
+import { localDateKey } from '@/utils/date';
 
 const profileAvatar = require('../../assets/icons/nav/tab-profile.png');
 
@@ -24,26 +26,18 @@ const leagueForLevel = (level: number) => {
   return { label: 'Bronce', color: '#D89045' };
 };
 
-const sameLocalDay = (isoDate: string, date: Date) => {
-  const candidate = new Date(isoDate);
-  return (
-    candidate.getFullYear() === date.getFullYear() &&
-    candidate.getMonth() === date.getMonth() &&
-    candidate.getDate() === date.getDate()
-  );
-};
-
 export const ProfileScreen = ({ navigate }: NavigationProps) => {
   const profile = useAppStore((state) => state.profile);
   const gamification = useAppStore((state) => state.gamification);
   const sessions = useAppStore((state) => state.sessions);
   const badges = useBadgeData();
+  const missions = useMissionData();
   const { colors } = useTheme();
   const league = leagueForLevel(gamification.level);
   const today = new Date();
   const caloriesToday = Math.round(
     sessions
-      .filter((session) => session.status === 'completed' && sameLocalDay(session.completedAt, today))
+      .filter((session) => session.status === 'completed' && localDateKey(session.completedAt) === localDateKey(today))
       .reduce((total, session) => total + session.caloriesEstimated, 0),
   );
   const unlockedCount = badges.filter((badge) => badge.unlocked).length;
@@ -52,6 +46,10 @@ export const ProfileScreen = ({ navigate }: NavigationProps) => {
     ...badges.filter((badge) => !badge.unlocked),
   ].slice(0, 3);
   const unlockedIds = new Set(badges.filter((badge) => badge.unlocked).map((badge) => badge.id));
+  const completedMissionCount = missions.filter((mission) => mission.status !== 'active').length;
+  const availableMissionXp = missions
+    .filter((mission) => mission.status === 'active')
+    .reduce((total, mission) => total + mission.rewardXp, 0);
 
   return (
     <Screen contentStyle={styles.screenContent}>
@@ -89,6 +87,32 @@ export const ProfileScreen = ({ navigate }: NavigationProps) => {
           <OverviewTile delay={265} icon={<Award size={19} color={colors.jump} />} value={`${unlockedCount}/${badgeCatalog.length}`} label="logros" />
         </View>
       </View>
+      </MotionReveal>
+
+      <MotionReveal delay={285} distance={6}>
+        <View>
+          <AppText variant="label" style={styles.sectionLabel}>
+            Actividad
+          </AppText>
+          <MotionPressable
+            accessibilityRole="button"
+            accessibilityLabel="Ver misiones"
+            onPress={() => navigate({ name: 'missions' })}
+            pressedScale={0.985}
+            style={({ pressed }) => [styles.missionsCard, pressed && styles.missionsCardPressed]}
+          >
+            <View style={styles.missionsIcon}>
+              <ListChecks size={24} color="#7657FF" strokeWidth={2.6} />
+            </View>
+            <View style={styles.missionsCopy}>
+              <AppText weight="800" style={styles.missionsTitle}>Misiones</AppText>
+              <AppText style={styles.missionsSubtitle}>
+                {completedMissionCount}/{missions.length} completas · hasta +{availableMissionXp} XP
+              </AppText>
+            </View>
+            <ChevronRight size={20} color="#8F87A8" strokeWidth={2.6} />
+          </MotionPressable>
+        </View>
       </MotionReveal>
 
       <MotionReveal delay={300} distance={6}>
@@ -249,6 +273,42 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.md,
+  },
+  missionsCard: {
+    minHeight: 72,
+    marginTop: spacing.sm,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: '#E9E2FA',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  missionsCardPressed: {
+    opacity: 0.78,
+  },
+  missionsIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: radius.sm,
+    backgroundColor: '#F1EDFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  missionsCopy: {
+    flex: 1,
+  },
+  missionsTitle: {
+    color: '#312B47',
+    fontSize: 15,
+    lineHeight: 19,
+  },
+  missionsSubtitle: {
+    color: '#8F87A8',
+    fontSize: 11,
+    lineHeight: 15,
   },
   achievementSlot: {
     width: '32%',
