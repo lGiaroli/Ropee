@@ -16,7 +16,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { spacing } from '@/theme/tokens';
 import { formatMinutes } from '@/utils/format';
 
-const heroBackground = require('../../assets/home/ropi-hero-no-fade.png');
+const heroBackground = require('../../assets/home/ropi-hero-no-fade.webp');
 const metricIcons = {
   streak: require('../../assets/icons/metrics/metric-streak.png'),
   xp: require('../../assets/icons/metrics/metric-xp.png'),

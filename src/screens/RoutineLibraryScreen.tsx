@@ -14,8 +14,8 @@ import { radius, spacing } from '@/theme/tokens';
 import { WorkoutRoutine } from '@/types/domain';
 
 const routineTabIcon = require('../../assets/icons/nav/tab-routines.png');
-const routineHeroTrainingArea = require('../../assets/routines/routine-hero-training-area.png');
-const routineRopiJump = require('../../assets/routines/ropi-routine-jump-cutout.png');
+const routineHeroTrainingArea = require('../../assets/routines/routine-hero-training-area.webp');
+const routineRopiJump = require('../../assets/routines/ropi-routine-jump-cutout.webp');
 
 interface RoutineTab {
   icon?: ImageSourcePropType;
@@ -802,6 +802,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: 'rgba(54, 36, 116, 0.12)',
     opacity: 0.85,
+    filter: 'blur(10px)',
     zIndex: 3,
   },
   heroRopiShadow: {
@@ -813,6 +814,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: 'rgba(54, 36, 116, 0.28)',
     opacity: 0.76,
+    filter: 'blur(5px)',
     zIndex: 4,
   },
   heroJumpTrailLeft: {

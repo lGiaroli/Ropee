@@ -35,7 +35,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { PerceivedDifficulty } from '@/types/domain';
 import { formatSeconds } from '@/utils/format';
 
-const completeHero = require('../../assets/summary/summary-complete-hero.png');
+const completeHero = require('../../assets/summary/summary-complete-hero.webp');
 const xpGem = require('../../assets/icons/metrics/metric-xp.png');
 const feedbackIcons = {
   veryEasy: require('../../assets/summary/feedback/feedback-very-easy.png'),

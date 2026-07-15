@@ -32,7 +32,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { RoutinePhaseType, WorkoutPhase } from '@/types/domain';
 import { formatSeconds } from '@/utils/format';
 
-const timerTrainingArea = require('../../assets/routines/routine-hero-training-area.png');
+const timerTrainingArea = require('../../assets/routines/routine-hero-training-area.webp');
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const JUMP_COLOR = '#16B968';

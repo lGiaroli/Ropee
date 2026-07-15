@@ -26,7 +26,7 @@ import { NavigationProps } from '@/navigation/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { WorkoutRoutine } from '@/types/domain';
 
-const routineHeroTrainingArea = require('../../assets/routines/routine-hero-training-area.png');
+const routineHeroTrainingArea = require('../../assets/routines/routine-hero-training-area.webp');
 
 interface CategoryPresentation {
   calories: string;
