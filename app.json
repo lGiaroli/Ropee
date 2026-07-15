@@ -8,7 +8,7 @@
     "userInterfaceStyle": "automatic",
     "scheme": "ropee",
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "app.ropee.mobile"
     },
     "android": {
@@ -32,12 +32,9 @@
           "color": "#1FD37A"
         }
       ],
-      "expo-audio"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "local-ropee"
-      }
-    }
+      "expo-audio",
+      "expo-status-bar",
+      "expo-asset"
+    ]
   }
 }
