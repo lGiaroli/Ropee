@@ -47,6 +47,7 @@ export const AppNavigator = () => {
   const demoSeeded = useRef(false);
   const { colors } = useTheme();
   const previewOnboarding =
+    __DEV__ &&
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('onboarding') === 'preview';
 
@@ -62,7 +63,7 @@ export const AppNavigator = () => {
   }, [route.name, routeStack.length]);
 
   useEffect(() => {
-    if (!hydrated || demoSeeded.current || typeof window === 'undefined') return;
+    if (!__DEV__ || !hydrated || demoSeeded.current || typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     if (params.get('demo') !== 'usage') return;
 
