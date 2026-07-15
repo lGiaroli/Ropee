@@ -326,7 +326,13 @@ const SettingsSwitch = ({ value }: { value: boolean }) => {
   const thumbColor = progress.interpolate({ inputRange: [0, 1], outputRange: ['#B9B0CC', '#FFFFFF'] });
 
   return (
-    <Animated.View style={[styles.customSwitch, value ? styles.customSwitchOn : undefined, { backgroundColor }]}> 
+    <Animated.View
+      style={[
+        styles.customSwitch,
+        value ? styles.customSwitchOn : undefined,
+        { backgroundColor },
+      ]}
+    >
       <Animated.View
         style={[
           styles.customSwitchThumb,
@@ -502,15 +508,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     padding: 3,
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   customSwitchOn: {
-    alignItems: 'flex-end',
     backgroundColor: '#7657FF',
-    shadowColor: '#7657FF',
-    shadowOpacity: 0.18,
-    shadowRadius: 7,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
   },
   customSwitchOff: {
     alignItems: 'flex-start',
