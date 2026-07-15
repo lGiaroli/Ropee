@@ -1,12 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { ChevronLeft, ChevronRight, Clock3, Flame, Music2, Pause, Play, VolumeX, X } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
+  BackHandler,
   Easing,
   Image,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   useWindowDimensions,
@@ -112,6 +114,33 @@ export const TimerScreen = ({ route, navigate }: NavigationProps) => {
     [],
   );
 
+  const pauseTimer = timer.pause;
+  const timerStatus = timer.status;
+  const requestExit = useCallback(() => {
+    resumeAfterExitRef.current = timerStatus === 'running';
+    pauseTimer();
+    setShowExitConfirm(true);
+  }, [pauseTimer, timerStatus]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return undefined;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      requestExit();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [requestExit]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || timer.status === 'completed') return undefined;
+    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warnBeforeUnload);
+    return () => window.removeEventListener('beforeunload', warnBeforeUnload);
+  }, [timer.status]);
+
   if (!routine || !plan) {
     return (
       <Screen>
@@ -165,11 +194,7 @@ export const TimerScreen = ({ route, navigate }: NavigationProps) => {
       <View style={styles.topBar}>
         <RoundButton
           label="Cerrar entrenamiento"
-          onPress={() => {
-            resumeAfterExitRef.current = timer.status === 'running';
-            timer.pause();
-            setShowExitConfirm(true);
-          }}
+          onPress={requestExit}
           backgroundColor="rgba(255,255,255,0.88)"
           icon={<X size={20} color="#34443D" strokeWidth={2.7} />}
         />

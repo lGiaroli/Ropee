@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { defaultRoutines } from '@/data/routines';
 import { buildWorkoutPlan } from '@/features/workouts/routineBuilder';
 import {
+  advanceTimerSnapshot,
   createTimerSnapshot,
   currentPhaseProgress,
   elapsedFromTimer,
@@ -14,6 +15,15 @@ import {
 } from '@/features/timer/timerEngine';
 
 describe('timerEngine', () => {
+  it('catches up from real elapsed time across phase boundaries', () => {
+    const plan = buildWorkoutPlan(defaultRoutines[0]!);
+    const firstPhaseSeconds = plan.phases[0]!.durationSeconds;
+    const snapshot = advanceTimerSnapshot(plan, createTimerSnapshot(plan), firstPhaseSeconds + 7);
+
+    expect(snapshot.currentIndex).toBe(1);
+    expect(workoutMetricsFromSnapshot(plan, snapshot).totalSeconds).toBe(firstPhaseSeconds + 7);
+  });
+
   it('calculates current and total progress', () => {
     const plan = buildWorkoutPlan(defaultRoutines[0]!);
     const phase = plan.phases[0];

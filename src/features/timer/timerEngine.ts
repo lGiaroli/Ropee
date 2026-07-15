@@ -50,6 +50,21 @@ export const tickTimerSnapshot = (plan: WorkoutPlan, snapshot: WorkoutTimerSnaps
   };
 };
 
+export const advanceTimerSnapshot = (
+  plan: WorkoutPlan,
+  snapshot: WorkoutTimerSnapshot,
+  elapsedSeconds: number,
+): WorkoutTimerSnapshot => {
+  let nextSnapshot = snapshot;
+  const seconds = Math.max(0, Math.floor(elapsedSeconds));
+
+  for (let second = 0; second < seconds && nextSnapshot.currentIndex < plan.phases.length; second += 1) {
+    nextSnapshot = tickTimerSnapshot(plan, nextSnapshot);
+  }
+
+  return nextSnapshot;
+};
+
 export const skipTimerPhase = (plan: WorkoutPlan, snapshot: WorkoutTimerSnapshot): WorkoutTimerSnapshot => {
   const phase = plan.phases[snapshot.currentIndex];
   if (!phase) return snapshot;
