@@ -135,7 +135,7 @@ const times = [
 
 const days = [2, 3, 4, 5, 6];
 const questionCount = 5;
-const welcomeBackground = require('../../assets/onboarding/welcome-ropee.png');
+const welcomeBackground = require('../../assets/onboarding/welcome-ropee.webp');
 
 const stepCopy = [
   {
@@ -417,7 +417,7 @@ const NameStep = ({
             autoFocus={Platform.OS !== 'web'}
             value={profile.name}
             onChangeText={(name) => setProfile((current) => ({ ...current, name }))}
-            placeholder="¿Cómo querés que te llame Ropi?"
+            placeholder="Nombre"
             placeholderTextColor={colors.textMuted}
             returnKeyType="done"
             style={[styles.input, { color: colors.text }]}

@@ -3,7 +3,7 @@ import { GamificationProfile, UserProfile } from '@/types/domain';
 
 export const defaultProfile: UserProfile = {
   id: 'local-user',
-  name: 'Kari',
+  name: '',
   level: 'beginner',
   goal: 'habit',
   availableTime: 10,
