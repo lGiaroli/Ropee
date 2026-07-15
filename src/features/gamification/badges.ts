@@ -1,11 +1,9 @@
-import { parseISO, startOfWeek } from 'date-fns';
+import { parseISO } from 'date-fns';
 import { badgeCatalog } from '@/data/gamification';
 import { Badge, GamificationProfile, WorkoutSession } from '@/types/domain';
+import { localWeekKey } from '@/utils/date';
 
-const weekKey = (isoDate: string) => {
-  const weekStart = startOfWeek(parseISO(isoDate), { weekStartsOn: 1 });
-  return weekStart.toISOString().slice(0, 10);
-};
+const weekKey = (isoDate: string) => localWeekKey(parseISO(isoDate));
 
 const maxCompletedWorkoutsInWeek = (sessions: WorkoutSession[]) => {
   const counts = new Map<string, number>();

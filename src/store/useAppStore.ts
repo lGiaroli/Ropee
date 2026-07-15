@@ -9,6 +9,7 @@ import { calculateXp } from '@/features/gamification/xp';
 import { progressionRecommendation } from '@/features/progress/recommendations';
 import { estimateCalories, estimateJumps } from '@/features/progress/stats';
 import { cloneRoutine, estimateRoutineDuration, validateRoutine } from '@/features/workouts/routineBuilder';
+import { localDateKey } from '@/utils/date';
 import { createId } from '@/utils/id';
 import { defaultGamification, defaultProfile, initialRoutines } from '@/store/defaultState';
 import {
@@ -171,8 +172,9 @@ export const useAppStore = create<AppState>()(
               streakRepairTokens: state.gamification.streakRepairTokens,
             };
 
+        const completedDayKey = localDateKey(completedAt);
         const completedTodayBefore = state.sessions.some(
-          (session) => session.status === 'completed' && session.completedAt.slice(0, 10) === completedAt.slice(0, 10),
+          (session) => session.status === 'completed' && localDateKey(session.completedAt) === completedDayKey,
         );
         const xpBreakdown = calculateXp({
           completed: input.completed,
@@ -202,7 +204,7 @@ export const useAppStore = create<AppState>()(
           xpEarned: xpBreakdown.total,
         };
 
-        const nextSessions = [session, ...state.sessions].slice(0, 250);
+        const nextSessions = [session, ...state.sessions];
         const levelBefore = state.gamification.level;
         const baseGamification: GamificationProfile = {
           ...state.gamification,

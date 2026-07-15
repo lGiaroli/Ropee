@@ -1,15 +1,10 @@
 import { addDays, endOfWeek, isSameDay, isWithinInterval, parseISO, startOfWeek, subDays } from 'date-fns';
 import { WorkoutSession } from '@/types/domain';
+import { localDateKey } from '@/utils/date';
 
 const weekDayLabels = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
 export const DEFAULT_JUMP_CADENCE_SPM = 120;
 export const JUMP_CADENCE_OPTIONS = [90, 120, 150, 180, 210] as const;
-
-const localDayKey = (date: Date) => {
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${date.getFullYear()}-${month}-${day}`;
-};
 
 export const normalizeJumpCadenceSpm = (cadencePerMinute = DEFAULT_JUMP_CADENCE_SPM) =>
   Math.min(240, Math.max(60, Math.round(cadencePerMinute)));
@@ -53,7 +48,7 @@ export const currentWeekJumpReport = (sessions: WorkoutSession[], now = new Date
     const daySessions = sessions.filter((session) => isSameDay(parseISO(session.completedAt), date));
     const jumpDuration = daySessions.reduce((sum, session) => sum + session.jumpDuration, 0);
     return {
-      date: localDayKey(date),
+      date: localDateKey(date),
       label: weekDayLabels[index],
       jumpDuration,
       minutes: Math.round(jumpDuration / 60),
@@ -65,10 +60,10 @@ export const currentWeekJumpReport = (sessions: WorkoutSession[], now = new Date
 export const lastNDaysActivity = (sessions: WorkoutSession[], days = 7, now = new Date()) =>
   Array.from({ length: days }).map((_, index) => {
     const date = subDays(now, days - index - 1);
-    const isoDay = date.toISOString().slice(0, 10);
-    const daySessions = sessions.filter((session) => session.completedAt.slice(0, 10) === isoDay);
+    const dayKey = localDateKey(date);
+    const daySessions = sessions.filter((session) => localDateKey(session.completedAt) === dayKey);
     return {
-      date: isoDay,
+      date: dayKey,
       minutes: Math.round(daySessions.reduce((sum, session) => sum + session.totalDuration, 0) / 60),
       completed: daySessions.some((session) => session.status === 'completed'),
     };

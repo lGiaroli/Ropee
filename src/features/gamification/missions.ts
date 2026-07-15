@@ -1,6 +1,7 @@
 import { endOfWeek, isSameDay, isWithinInterval, parseISO, startOfWeek } from 'date-fns';
 import { missionTemplates } from '@/data/gamification';
 import { GamificationProfile, Mission, WorkoutSession } from '@/types/domain';
+import { localDateKey, localWeekKey } from '@/utils/date';
 
 export const buildMissions = (
   sessions: WorkoutSession[],
@@ -23,8 +24,8 @@ export const buildMissions = (
   });
 
 export const instanceMissionId = (templateId: string, now = new Date()) => {
-  const week = startOfWeek(now, { weekStartsOn: 1 }).toISOString().slice(0, 10);
-  const day = now.toISOString().slice(0, 10);
+  const week = localWeekKey(now);
+  const day = localDateKey(now);
   return `${templateId}-${templateId.startsWith('weekly') ? week : day}`;
 };
 
@@ -79,7 +80,7 @@ const bestPreviousWeeklyJumpSeconds = (sessions: WorkoutSession[], currentWeekSt
   sessions.forEach((session) => {
     const completedAt = parseISO(session.completedAt);
     if (completedAt >= currentWeekStart) return;
-    const week = startOfWeek(completedAt, { weekStartsOn: 1 }).toISOString();
+    const week = localWeekKey(completedAt);
     totals.set(week, (totals.get(week) ?? 0) + session.jumpDuration);
   });
   return Math.max(0, ...Array.from(totals.values()));
