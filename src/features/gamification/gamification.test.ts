@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateXp } from '@/features/gamification/xp';
 import { levelForXp, progressToNextLevel } from '@/features/gamification/levels';
-import { updateStreak } from '@/features/gamification/streaks';
+import { isStreakActive, updateStreak } from '@/features/gamification/streaks';
 
 describe('gamification', () => {
   it('calculates XP with jump minutes, daily goal and streak bonus', () => {
@@ -47,6 +47,14 @@ describe('gamification', () => {
     expect(result.currentStreak).toBe(5);
     expect(result.usedRepair).toBe(true);
     expect(result.streakRepairTokens).toBe(0);
+  });
+
+  it('expires a stale streak after all planned rest days are used', () => {
+    expect(isStreakActive('2026-07-11T20:00:00.000Z', '2026-07-06T20:00:00.000Z', 8, 0, 4)).toBe(false);
+  });
+
+  it('keeps one extra rest day while a repair token is available', () => {
+    expect(isStreakActive('2026-07-11T20:00:00.000Z', '2026-07-06T20:00:00.000Z', 8, 1, 4)).toBe(true);
   });
 
   it('maps level thresholds', () => {

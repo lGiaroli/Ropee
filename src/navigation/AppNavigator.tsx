@@ -1,6 +1,6 @@
 import { Trophy } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, AppState, ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/AppText';
 import { MotionReveal } from '@/components/MotionReveal';
 import { useTheme } from '@/components/useTheme';
@@ -42,6 +42,7 @@ export const AppNavigator = () => {
   const hydrated = useAppStore((state) => state.hydrated);
   const onboardingComplete = useAppStore((state) => state.onboardingComplete);
   const seedDemoUsage = useAppStore((state) => state.seedDemoUsage);
+  const refreshStreak = useAppStore((state) => state.refreshStreak);
   const [route, setRoute] = useState<RouteState>({ name: 'home' });
   const demoSeeded = useRef(false);
   const { colors } = useTheme();
@@ -62,6 +63,15 @@ export const AppNavigator = () => {
     const routeTimer = window.setTimeout(() => setRoute({ name: 'stats' }), 0);
     return () => window.clearTimeout(routeTimer);
   }, [hydrated, seedDemoUsage]);
+
+  useEffect(() => {
+    if (!hydrated) return undefined;
+    refreshStreak();
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') refreshStreak();
+    });
+    return () => subscription.remove();
+  }, [hydrated, refreshStreak]);
 
   if (!hydrated) {
     return (

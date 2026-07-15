@@ -8,6 +8,25 @@ export interface StreakResult {
   streakRepairTokens: number;
 }
 
+const allowedRestDaysForGoal = (weeklyGoal: number) =>
+  7 - Math.min(7, Math.max(1, Math.round(weeklyGoal)));
+
+export const isStreakActive = (
+  nowIso: string,
+  lastWorkoutDateIso: string | undefined,
+  currentStreak: number,
+  streakRepairTokens: number,
+  weeklyGoal = 7,
+) => {
+  if (!lastWorkoutDateIso || currentStreak <= 0) return false;
+  const daysSinceWorkout = differenceInCalendarDays(parseISO(nowIso), parseISO(lastWorkoutDateIso));
+  if (daysSinceWorkout <= 0) return true;
+
+  const restDaysSinceWorkout = daysSinceWorkout - 1;
+  const repairAllowance = streakRepairTokens > 0 ? 1 : 0;
+  return restDaysSinceWorkout <= allowedRestDaysForGoal(weeklyGoal) + repairAllowance;
+};
+
 export const updateStreak = (
   workoutDateIso: string,
   lastWorkoutDateIso: string | undefined,
@@ -17,8 +36,7 @@ export const updateStreak = (
   weeklyGoal = 7,
 ): StreakResult => {
   const workoutDate = parseISO(workoutDateIso);
-  const normalizedWeeklyGoal = Math.min(7, Math.max(1, Math.round(weeklyGoal)));
-  const allowedRestDays = 7 - normalizedWeeklyGoal;
+  const allowedRestDays = allowedRestDaysForGoal(weeklyGoal);
   if (!lastWorkoutDateIso) {
     return {
       currentStreak: 1,

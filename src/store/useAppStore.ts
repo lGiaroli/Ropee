@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { claimableMissions, instanceMissionId } from '@/features/gamification/missions';
 import { evaluateNewBadges } from '@/features/gamification/badges';
 import { levelForXp } from '@/features/gamification/levels';
-import { updateStreak } from '@/features/gamification/streaks';
+import { isStreakActive, updateStreak } from '@/features/gamification/streaks';
 import { calculateXp } from '@/features/gamification/xp';
 import { progressionRecommendation } from '@/features/progress/recommendations';
 import { estimateCalories, estimateJumps } from '@/features/progress/stats';
@@ -42,6 +42,7 @@ interface AppState {
   toggleFavoriteRoutine: (routineId: string) => void;
   recordWorkout: (input: RecordWorkoutInput) => WorkoutCompletionResult;
   rateWorkout: (sessionId: string, rating: PerceivedDifficulty) => void;
+  refreshStreak: (nowIso?: string) => void;
   clearLastCompletion: () => void;
   seedDemoUsage: () => void;
   resetLocalData: () => void;
@@ -271,6 +272,23 @@ export const useAppStore = create<AppState>()(
                 }
               : state.lastCompletion,
         })),
+      refreshStreak: (nowIso = new Date().toISOString()) =>
+        set((state) => {
+          const active = isStreakActive(
+            nowIso,
+            state.gamification.lastWorkoutDate,
+            state.gamification.currentStreak,
+            state.gamification.streakRepairTokens,
+            state.profile.weeklyGoal,
+          );
+          if (active || state.gamification.currentStreak === 0) return state;
+          return {
+            gamification: {
+              ...state.gamification,
+              currentStreak: 0,
+            },
+          };
+        }),
       clearLastCompletion: () => set({ lastCompletion: undefined }),
       syncDefaultRoutines: () =>
         set((state) => ({
