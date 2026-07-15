@@ -1,18 +1,17 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { normalizeReminderTime } from '@/utils/reminder';
 
 export const scheduleDailyReminder = async (time: string, enabled: boolean) => {
+  if (Platform.OS === 'web') return 'unsupported' as const;
+
   await Notifications.cancelAllScheduledNotificationsAsync().catch(() => undefined);
-  if (!enabled || Platform.OS === 'web') return;
+  if (!enabled) return 'disabled' as const;
 
   const permission = await Notifications.requestPermissionsAsync();
-  if (!permission.granted) return;
+  if (!permission.granted) return 'denied' as const;
 
-  const parts = time.split(':').map(Number);
-  const hourValue = parts[0];
-  const minuteValue = parts[1];
-  const hour = Number.isFinite(hourValue) ? Number(hourValue) : 19;
-  const minute = Number.isFinite(minuteValue) ? Number(minuteValue) : 0;
+  const [hour = 19, minute = 0] = normalizeReminderTime(time).split(':').map(Number);
 
   await Notifications.scheduleNotificationAsync({
     content: {
@@ -26,4 +25,5 @@ export const scheduleDailyReminder = async (time: string, enabled: boolean) => {
       minute,
     },
   });
+  return 'scheduled' as const;
 };

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { Animated, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, Animated, Platform, StyleSheet, TextInput, View } from 'react-native';
 import { AppText } from '@/components/AppText';
 import { MotionPressable } from '@/components/MotionPressable';
 import { MotionReveal } from '@/components/MotionReveal';
@@ -24,6 +24,7 @@ import { NavigationProps } from '@/navigation/navigation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { scheduleDailyReminder } from '@/services/notificationService';
 import { useAppStore } from '@/store/useAppStore';
+import { normalizeReminderTime } from '@/utils/reminder';
 
 interface SettingsSectionProps {
   children: ReactNode;
@@ -54,10 +55,26 @@ export const SettingsScreen = (_props: NavigationProps) => {
   const resetLocalData = useAppStore((state) => state.resetLocalData);
   const { colors } = useTheme();
   const jumpCadenceSpm = normalizeJumpCadenceSpm(profile.jumpCadenceSpm);
+  const [reminderTimeDraft, setReminderTimeDraft] = useState(profile.reminderTime);
 
   const updateReminder = async (time: string, enabled = profile.remindersEnabled) => {
-    updateProfile({ reminderTime: time, remindersEnabled: enabled });
-    await scheduleDailyReminder(time, enabled);
+    const reminderTime = normalizeReminderTime(time);
+    setReminderTimeDraft(reminderTime);
+    updateProfile({ reminderTime, remindersEnabled: enabled });
+    await scheduleDailyReminder(reminderTime, enabled);
+  };
+
+  const confirmReset = () => {
+    const message = 'Se borrarán tu progreso, rutinas y configuración de este dispositivo.';
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(`¿Reiniciar todos los datos?\n\n${message}`)) resetLocalData();
+      return;
+    }
+
+    Alert.alert('¿Reiniciar todos los datos?', message, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Reiniciar', style: 'destructive', onPress: resetLocalData },
+    ]);
   };
 
   return (
@@ -132,8 +149,10 @@ export const SettingsScreen = (_props: NavigationProps) => {
           accessory={
             <TextInput
               accessibilityLabel="Horario de recordatorio"
-              value={profile.reminderTime}
-              onChangeText={(reminderTime) => updateReminder(reminderTime)}
+              value={reminderTimeDraft}
+              onChangeText={setReminderTimeDraft}
+              onEndEditing={({ nativeEvent }) => void updateReminder(nativeEvent.text)}
+              maxLength={5}
               placeholder="19:00"
               placeholderTextColor="#9A91B5"
               style={styles.timeInput}
@@ -167,7 +186,7 @@ export const SettingsScreen = (_props: NavigationProps) => {
       <MotionPressable
         accessibilityRole="button"
         accessibilityLabel="Reiniciar datos locales"
-        onPress={resetLocalData}
+        onPress={confirmReset}
         pressedScale={0.985}
         style={({ pressed }) => [styles.resetButton, { opacity: pressed ? 0.76 : 1, borderColor: colors.danger }]}
       >
