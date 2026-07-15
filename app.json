@@ -31,7 +31,8 @@
         {
           "color": "#1FD37A"
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "extra": {
       "eas": {
