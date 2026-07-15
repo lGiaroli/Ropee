@@ -31,7 +31,6 @@ interface AppState {
   routines: WorkoutRoutine[];
   sessions: WorkoutSession[];
   unlockedBadges: Badge[];
-  favoriteRoutineId?: string;
   lastCompletion?: WorkoutCompletionResult;
   setHydrated: (hydrated: boolean) => void;
   completeOnboarding: (profile: UserProfile) => void;
@@ -88,13 +87,11 @@ export const useAppStore = create<AppState>()(
       routines: initialRoutines,
       sessions: [],
       unlockedBadges: [],
-      favoriteRoutineId: 'initial-6x20',
       setHydrated: (hydrated) => set({ hydrated }),
       completeOnboarding: (profile) => {
         set({
           onboardingComplete: true,
           profile,
-          favoriteRoutineId: recommendedRoutineForProfile(profile),
         });
       },
       updateProfile: (profile) => set((state) => ({ profile: { ...state.profile, ...profile } })),
@@ -125,7 +122,6 @@ export const useAppStore = create<AppState>()(
       deleteRoutine: (routineId) =>
         set((state) => ({
           routines: state.routines.filter((routine) => routine.id !== routineId || !routine.isCustom),
-          favoriteRoutineId: state.favoriteRoutineId === routineId ? 'initial-6x20' : state.favoriteRoutineId,
         })),
       toggleFavoriteRoutine: (routineId) =>
         set((state) => {
@@ -136,13 +132,8 @@ export const useAppStore = create<AppState>()(
           const routines = state.routines.map((routine) =>
             routine.id === routineId ? { ...routine, isFavorite: nextIsFavorite } : routine,
           );
-          const nextFavoriteRoutineId = nextIsFavorite
-            ? routineId
-            : routines.find((routine) => routine.isFavorite)?.id;
-
           return {
             routines,
-            favoriteRoutineId: nextFavoriteRoutineId,
           };
         }),
       recordWorkout: (input) => {
@@ -331,7 +322,6 @@ export const useAppStore = create<AppState>()(
           routines: initialRoutines,
           sessions,
           unlockedBadges: [],
-          favoriteRoutineId: 'base-8x6',
           lastCompletion: undefined,
         });
       },
@@ -343,13 +333,19 @@ export const useAppStore = create<AppState>()(
           routines: initialRoutines,
           sessions: [],
           unlockedBadges: [],
-          favoriteRoutineId: 'initial-6x20',
           lastCompletion: undefined,
         }),
     }),
     {
       name: storageName,
+      version: 2,
       storage: createJSONStorage(() => ropeeStorage),
+      migrate: (persistedState) => {
+        if (!persistedState || typeof persistedState !== 'object') return persistedState as AppState;
+        const migratedState = { ...(persistedState as Record<string, unknown>) };
+        delete migratedState.favoriteRoutineId;
+        return migratedState as unknown as AppState;
+      },
       onRehydrateStorage: () => (state) => {
         state?.syncDefaultRoutines();
         state?.setHydrated(true);
@@ -374,12 +370,6 @@ const mergeDefaultRoutines = (routines: WorkoutRoutine[]) => {
 
   const customAndUnknown = routines.filter((routine) => routine.isCustom || !defaultIds.has(routine.id));
   return [...defaults, ...customAndUnknown];
-};
-
-const recommendedRoutineForProfile = (profile: UserProfile) => {
-  if (profile.level === 'advanced' || profile.availableTime >= 45) return 'long-80x25';
-  if (profile.level === 'intermediate' || profile.availableTime >= 20) return 'base-8x6';
-  return 'initial-6x20';
 };
 
 const demoUsagePattern = [

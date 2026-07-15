@@ -10,7 +10,6 @@ export const useDashboardData = () => {
   const gamification = useAppStore((state) => state.gamification);
   const routines = useAppStore((state) => state.routines);
   const sessions = useAppStore((state) => state.sessions);
-  const favoriteRoutineId = useAppStore((state) => state.favoriteRoutineId);
 
   return useMemo(() => {
     const now = new Date();
@@ -20,10 +19,7 @@ export const useDashboardData = () => {
     const stats = summarizeSessions(sessions);
     const levelProgress = progressToNextLevel(gamification.xp);
     const missions = buildMissions(sessions, gamification).slice(0, 4);
-    const routine =
-      routines.find((candidate) => candidate.id === favoriteRoutineId) ??
-      routines.find((candidate) => candidate.isFavorite) ??
-      routines[0];
+    const routine = routines.find((candidate) => candidate.isFavorite) ?? routines[0];
     return {
       profile,
       gamification,
@@ -37,7 +33,7 @@ export const useDashboardData = () => {
       lastSession: sessions[0],
       activity: lastNDaysActivity(sessions, 7, now),
     };
-  }, [favoriteRoutineId, gamification, profile, routines, sessions]);
+  }, [gamification, profile, routines, sessions]);
 };
 
 export const useMissionData = () => {
