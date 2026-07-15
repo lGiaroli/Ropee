@@ -1,6 +1,6 @@
 import { Trophy } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
-import { Animated, AppState, ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, AppState, BackHandler, ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/AppText';
 import { MotionReveal } from '@/components/MotionReveal';
 import { useTheme } from '@/components/useTheme';
@@ -19,7 +19,7 @@ import { SettingsScreen } from '@/screens/SettingsScreen';
 import { StatsScreen } from '@/screens/StatsScreen';
 import { SummaryScreen } from '@/screens/SummaryScreen';
 import { TimerScreen } from '@/screens/TimerScreen';
-import { RouteState, ScreenName } from '@/navigation/navigation';
+import { popRoute, pushRoute, RouteState, ScreenName } from '@/navigation/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { radius, spacing } from '@/theme/tokens';
 
@@ -42,14 +42,24 @@ export const AppNavigator = () => {
   const onboardingComplete = useAppStore((state) => state.onboardingComplete);
   const seedDemoUsage = useAppStore((state) => state.seedDemoUsage);
   const refreshStreak = useAppStore((state) => state.refreshStreak);
-  const [route, setRoute] = useState<RouteState>({ name: 'home' });
+  const [routeStack, setRouteStack] = useState<RouteState[]>([{ name: 'home' }]);
+  const route = routeStack.at(-1) ?? { name: 'home' };
   const demoSeeded = useRef(false);
   const { colors } = useTheme();
   const previewOnboarding =
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('onboarding') === 'preview';
 
-  const navigate = (nextRoute: RouteState) => setRoute(nextRoute);
+  const navigate = useCallback((nextRoute: RouteState) => {
+    setRouteStack((currentStack) => pushRoute(currentStack, nextRoute));
+  }, []);
+
+  const goBack = useCallback(() => {
+    if (route.name === 'timer') return false;
+    if (routeStack.length <= 1) return false;
+    setRouteStack((currentStack) => popRoute(currentStack));
+    return true;
+  }, [route.name, routeStack.length]);
 
   useEffect(() => {
     if (!hydrated || demoSeeded.current || typeof window === 'undefined') return;
@@ -59,9 +69,9 @@ export const AppNavigator = () => {
     demoSeeded.current = true;
     seedDemoUsage();
     window.history.replaceState(null, '', window.location.pathname);
-    const routeTimer = window.setTimeout(() => setRoute({ name: 'stats' }), 0);
+    const routeTimer = window.setTimeout(() => navigate({ name: 'stats' }), 0);
     return () => window.clearTimeout(routeTimer);
-  }, [hydrated, seedDemoUsage]);
+  }, [hydrated, navigate, seedDemoUsage]);
 
   useEffect(() => {
     if (!hydrated) return undefined;
@@ -71,6 +81,11 @@ export const AppNavigator = () => {
     });
     return () => subscription.remove();
   }, [hydrated, refreshStreak]);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', goBack);
+    return () => subscription.remove();
+  }, [goBack]);
 
   if (!hydrated) {
     return (
